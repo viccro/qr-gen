@@ -53,9 +53,14 @@
             margin-top: 30px;
             display: inline-block;
         }
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
         .download-btn {
             background: #28a745;
-            margin-top: 15px;
             display: none;
         }
         .download-btn:hover {
@@ -66,9 +71,11 @@
 <body>
     <div class="container">
         <h1>QR Code Generator</h1>
-        <input type="text" id="urlInput" placeholder="Enter URL..." value="https://github.com">
-        <button onclick="generateQR()">Generate QR Code</button>
-        <button class="download-btn" id="downloadBtn" onclick="downloadQR()">Download QR Code</button>
+        <input type="text" id="urlInput" placeholder="Enter URL...">
+        <div class="buttons">
+            <button onclick="generateQR()">Generate QR Code</button>
+            <button class="download-btn" id="downloadBtn" onclick="downloadQR()">Download QR Code</button>
+        </div>
         <div id="qrcode"></div>
     </div>
 
@@ -92,7 +99,7 @@
                 correctLevel: QRCode.CorrectLevel.H
             });
 
-            document.getElementById('downloadBtn').style.display = 'block';
+            document.getElementById('downloadBtn').style.display = 'inline-block';
         }
 
         function downloadQR() {
