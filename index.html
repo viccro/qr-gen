@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Generator</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
+            integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA=="
+            crossorigin="anonymous"></script>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: sans-serif;
             max-width: 600px;
             margin: 50px auto;
             padding: 20px;
@@ -27,7 +30,7 @@
         input {
             width: 100%;
             padding: 12px;
-            font-size: 16px;
+            font-size: 18px;
             border: 2px solid #ddd;
             border-radius: 4px;
             box-sizing: border-box;
@@ -35,16 +38,13 @@
         }
         button {
             padding: 12px 30px;
-            font-size: 16px;
-            background: #007bff;
+            font-size: 18px;
+            /* font-weight: bold; */
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             transition: background 0.3s;
-        }
-        button:hover {
-            background: #0056b3;
         }
         button:active {
             transform: scale(0.98);
@@ -59,12 +59,18 @@
             gap: 10px;
             flex-wrap: wrap;
         }
+        .generate-btn {
+            background: #2c407f;
+        }
+        .generate-btn:hover {
+            background: #293961;
+        }
         .download-btn {
-            background: #28a745;
+            background: #355e3b;
             display: none;
         }
         .download-btn:hover {
-            background: #218838;
+            background: #014421;
         }
     </style>
 </head>
@@ -73,29 +79,34 @@
         <h1>QR Code Generator</h1>
         <input type="text" id="urlInput" placeholder="Enter URL...">
         <div class="buttons">
-            <button onclick="generateQR()">Generate QR Code</button>
-            <button class="download-btn" id="downloadBtn" onclick="downloadQR()">Download QR Code</button>
+            <button class="generate-btn" id="generateBtn">Generate</button>
+            <button class="download-btn" id="downloadBtn">Download</button>
         </div>
         <div id="qrcode"></div>
     </div>
 
     <script>
-        let qr = null;
-
         function generateQR() {
             const url = document.getElementById('urlInput').value.trim();
             if (!url) {
                 alert('Please enter a URL');
                 return;
             }
+            const normalized = url.replace(/[\s\u0000-\u001f]/g, '');
+            if (/^(javascript|data|vbscript|file|blob):/i.test(normalized)) {
+                alert('That type of link isn\'t allowed.');
+                return;
+            }
+            if (new TextEncoder().encode(url).length > 1000) {
+                alert('Text is too long for a QR code.');
+                return;
+            }
 
             document.getElementById('qrcode').innerHTML = '';
-            qr = new QRCode(document.getElementById('qrcode'), {
+            new QRCode(document.getElementById('qrcode'), {
                 text: url,
                 width: 256,
                 height: 256,
-                colorDark: '#000000',
-                colorLight: '#ffffff',
                 correctLevel: QRCode.CorrectLevel.H
             });
 
@@ -112,9 +123,16 @@
             }
         }
 
+        document.getElementById('generateBtn').addEventListener('click', generateQR);
+        document.getElementById('downloadBtn').addEventListener('click', downloadQR);
         document.getElementById('urlInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') generateQR();
         });
     </script>
+
+<!-- Feel free to yell at Vicki if this page breaks! -->
+
+<!-- QRCode.js by David Shim, MIT license: https://github.com/davidshimjs/qrcodejs  -->
+
 </body>
 </html>
